@@ -52,6 +52,7 @@ public class App {
             commandManager.register("execute_script", new ExecuteScript());
             commandManager.register("reg", new Register(client, console));
             commandManager.register("auth", new Authenticate(client, console));
+            commandManager.register("logout", new Logout());
             var cli = new Runner(console, commandManager);
             cli.interactiveMode();
         } catch (UnknownHostException e) {

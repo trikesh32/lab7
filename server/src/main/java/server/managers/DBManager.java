@@ -8,6 +8,8 @@ import common.user.User;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 public class DBManager {
@@ -46,20 +48,20 @@ public class DBManager {
         stmt.setInt(1, user.getId());
         stmt.setInt(2, id);
         ResultSet res = stmt.executeQuery();
+        res.next();
         if (res.getInt("c") != 1) throw new NotFoundException();
-        stmt = conn.prepareStatement("SELECT * FROM vehicle WHERE user_id = ? AND id = ?");
-        stmt.setInt(1, user.getId());
-        stmt.setInt(2, id);
-        res = stmt.executeQuery();
-        res.updateString(2, vehicle.getName());
-        res.updateInt(3, vehicle.getX());
-        res.updateFloat(4, vehicle.getY());
-        res.updateDate(5, Date.valueOf(vehicle.getCreationDate()));
-        res.updateInt(6, vehicle.getEnginePower());
-        res.updateInt(7, vehicle.getCapacity());
-        res.updateString(8, vehicle.getVehicleType().name());
-        res.updateString(9, vehicle.getFuelType() == null ? null : vehicle.getFuelType().name());
-        res.updateRow();
+        stmt = conn.prepareStatement("UPDATE vehicle SET name=?, x=?, y=?, creation_date=?, engine_power=?, capacity=?, type=cast(? AS vehicle_type), fuel_type=cast(? AS fuel_type) where id=? AND user_id=?");
+        stmt.setString(1, vehicle.getName());
+        stmt.setInt(2, vehicle.getX());
+        stmt.setFloat(3, vehicle.getY());
+        stmt.setDate(4, Date.valueOf(vehicle.getCreationDate()));
+        stmt.setInt(5, vehicle.getEnginePower());
+        stmt.setInt(6, vehicle.getCapacity());
+        stmt.setString(7, vehicle.getVehicleType().name());
+        stmt.setString(8, vehicle.getFuelType() == null ? null : vehicle.getFuelType().name());
+        stmt.setInt(9, id);
+        stmt.setInt(10, user.getId());
+        stmt.executeUpdate();
         conn.close();
     }
     public void clear(User user) throws SQLException {
@@ -107,14 +109,14 @@ public class DBManager {
         conn.close();
     }
 
-    public String get_username(Integer id) throws SQLException, NotFoundException {
+    public Map<Integer, String> get_usernames() throws SQLException{
         var conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("SELECT name FROM users WHERE id=?");
-        stmt.setInt(1, id);
+        HashMap<Integer, String> output = new HashMap<>();
+        PreparedStatement stmt = conn.prepareStatement("SELECT vehicle.id as id, users.name as name from vehicle join users on vehicle.user_id = users.id");
         ResultSet res = stmt.executeQuery();
-        if (res.next()){
-            return res.getString(1);
+        while (res.next()){
+            output.put(res.getInt("id"), res.getString("name"));
         }
-        throw new NotFoundException();
+        return output;
     }
 }

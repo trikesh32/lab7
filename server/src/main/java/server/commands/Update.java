@@ -45,6 +45,7 @@ public class Update extends Command {
         } catch (ForbiddenException ex) {
             return new ExecutionResponse(false, "Объект не принадлежит вам!");
         } catch (SQLException ex) {
+            System.out.println(ex.toString());
             return new ExecutionResponse(false, "Ошибка работы с базой данных!");
         } catch (DBManager.NotFoundException ex) {
             return new ExecutionResponse(false, "Объект не найден!");

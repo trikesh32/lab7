@@ -93,7 +93,6 @@ public class Vehicle implements Validatable, Comparable<Vehicle>, Serializable {
         if (enginePower <= 0) return false;
         if (capacity == null || capacity <= 0) return false;
         if (type == null) return false;
-        if (userId == null) return false;
         return true;
     }
 

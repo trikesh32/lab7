@@ -177,7 +177,7 @@ public class CollectionManager {
         dbManager.remove_lower(user, o);
         lock.lock();
         if (o != null && o.check_validity()){
-            collection = collection.stream().filter(x -> x.compareTo(o) >= 0).collect(Collectors.toCollection(Stack::new));
+            collection = collection.stream().filter(x -> x.compareTo(o) >= 0 || x.getUserId() != user.getId()).collect(Collectors.toCollection(Stack::new));
         }
         lastSaveTime = LocalDateTime.now();
         lock.unlock();
@@ -199,10 +199,14 @@ public class CollectionManager {
 
     public String show() throws SQLException, DBManager.NotFoundException {
         StringBuilder out = new StringBuilder();
+        var usernames = dbManager.get_usernames();
         lock.lock();
         try {
-            for (var o : collection)
-                out.append("Owner: " + dbManager.get_username(o.getUserId())+ " " + o + "\n");
+            for (var o : collection){
+                var username = usernames.get(o.getId());
+                if (username == null) throw new DBManager.NotFoundException();
+                out.append("Owner: " + username + " " + o + "\n");
+            }
             return out.toString();
         } catch (Exception e){
             throw e;
