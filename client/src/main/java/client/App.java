@@ -1,22 +1,32 @@
 package client;
 
 import client.console.StandardConsole;
+import client.controllers.AuthController;
 import client.network.UDPClient;
 import client.utils.Runner;
 import client.managers.CommandManager;
 import client.commands.*;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.text.RuleBasedCollator;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.logging.*;
+import client.utils.Localizator;
 
-public class App {
+public class App extends Application {
     private static final int PORT = 17535;
     public static final Logger logger = Logger.getLogger("ClientLogger");
+    public static UDPClient client;
+    private Stage mainStage;
+    private Localizator localizator;
 
     public static void main(String[] args){
         try {
@@ -34,36 +44,51 @@ public class App {
             System.out.println("Неудалось создать логи(");
             System.exit(1);
         }
-        var console = new StandardConsole();
         try{
 //            var client = new UDPClient(InetAddress.getByAddress(new byte[]{(byte) 192, (byte) 168, (byte)10, (byte)80}), PORT);
-            var client = new UDPClient(InetAddress.getLocalHost(), PORT);
-            System.out.println("aboba");
-            CommandManager commandManager = new CommandManager();
-            commandManager.register("add", new Add(console, client));
-            commandManager.register("exit", new Exit(console));
-            commandManager.register("show", new Show(console, client));
-            commandManager.register("help", new Help(commandManager, client));
-            commandManager.register("info", new Info(client));
-            commandManager.register("update", new Update(console, client));
-            commandManager.register("remove_by_id", new RemoveById(client));
-            commandManager.register("clear", new Clear(client));
-            commandManager.register("sort", new Sort(client));
-            commandManager.register("remove_lower", new RemoveLower(console, client));
-            commandManager.register("sum_of_capacity", new SumOfCapacity(client));
-            commandManager.register("filter_by_capacity", new FilterByCapacity(client));
-            commandManager.register("filter_less_than_type", new FilterLessThanType(client));
-            commandManager.register("execute_script", new ExecuteScript());
-            commandManager.register("reg", new Register(client, console));
-            commandManager.register("auth", new Authenticate(client, console));
-            commandManager.register("logout", new Logout());
-            var cli = new Runner(console, commandManager);
-            cli.interactiveMode();
+            client = new UDPClient(InetAddress.getLocalHost(), PORT);
+            launch(args);
         } catch (UnknownHostException e) {
-            logger.warning("Неизвестный хост");
+            logger.severe("Неизвестный хост");
+            System.err.println("Неизвестный хост");
 
         } catch (IOException e) {
-            logger.warning("Невозможно подключиться к серверу.");
+            logger.severe("Невозможно подключиться к серверу");
+            System.err.println("Невозможно подключиться к серверу");
         }
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        localizator = new Localizator(ResourceBundle.getBundle("client.locales.gui", new Locale("ru", "RU")));
+        mainStage = stage;
+        authStage();
+    }
+    private void authStage(){
+        var authLoader = new FXMLLoader(getClass().getResource("/auth.fxml"));
+        Parent authRoot = loadFxml(authLoader);
+        AuthController authController = authLoader.getController();
+        authController.setCallback(this::startMain);
+        authController.setClient(client);
+        authController.setLocalizator(localizator);
+
+        mainStage.setScene(new Scene(authRoot));
+        mainStage.setTitle("Vehicle fun");
+        mainStage.setResizable(false);
+        mainStage.show();
+    }
+    public void startMain(){
+
+    }
+    private Parent loadFxml(FXMLLoader loader){
+        Parent parent = null;
+        try {
+            parent = loader.load();
+        } catch (IOException e){
+            logger.severe("Can't load " + loader.toString());
+            System.err.println(e);
+            System.exit(1);
+        }
+        return parent;
     }
 }

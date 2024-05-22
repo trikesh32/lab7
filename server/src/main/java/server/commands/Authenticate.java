@@ -20,7 +20,7 @@ public class Authenticate extends Command{
         try {
             var userId = authManager.authenticateUser(user.getName(), user.getPassword());
             if (userId == 0){
-                return new ExecutionResponse(false, "Нет такого пользоватьля");
+                return new ExecutionResponse(false, "Нет такого пользователя");
             } else if (userId == -1) {
                 return new ExecutionResponse(false, "Не правильный пароль");
             }
