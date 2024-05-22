@@ -9,6 +9,9 @@ import client.commands.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.RuleBasedCollator;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 import java.util.logging.*;
 
 public class App {
@@ -35,6 +38,7 @@ public class App {
         try{
 //            var client = new UDPClient(InetAddress.getByAddress(new byte[]{(byte) 192, (byte) 168, (byte)10, (byte)80}), PORT);
             var client = new UDPClient(InetAddress.getLocalHost(), PORT);
+            System.out.println("aboba");
             CommandManager commandManager = new CommandManager();
             commandManager.register("add", new Add(console, client));
             commandManager.register("exit", new Exit(console));

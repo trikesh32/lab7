@@ -20,7 +20,7 @@ public class UDPDatagramServer extends UDPServer {
     private DatagramSocket datagramSocket;
     private final Logger logger = App.logger;
 
-    public UDPDatagramServer(InetAddress addr, int port, CommandHandler commandHandler) throws SocketException {
+    public  UDPDatagramServer(InetAddress addr, int port, CommandHandler commandHandler) throws SocketException {
         super(new InetSocketAddress(addr, port), commandHandler);
         this.datagramSocket = new DatagramSocket(getAddr());
         this.datagramSocket.setReuseAddress(true);

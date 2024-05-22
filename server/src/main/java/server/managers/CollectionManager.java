@@ -206,7 +206,7 @@ public class CollectionManager {
                 var username = usernames.get(o.getId());
                 if (username == null) throw new DBManager.NotFoundException();
                 out.append("Owner: " + username + " " + o + "\n");
-            }
+              }
             return out.toString();
         } catch (Exception e){
             throw e;
