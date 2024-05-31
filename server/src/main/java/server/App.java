@@ -36,12 +36,10 @@ public class App {
         CommandManager commandManager = new CommandManager();
         commandManager.register("add", new Add(collectionManager));
         commandManager.register("show", new Show(collectionManager));
-        commandManager.register("help", new Help(commandManager));
         commandManager.register("info", new Info(collectionManager));
         commandManager.register("update", new Update(collectionManager));
         commandManager.register("remove_by_id", new RemoveById(collectionManager));
         commandManager.register("clear", new Clear(collectionManager));
-        commandManager.register("sort", new Sort(collectionManager));
         commandManager.register("remove_lower", new RemoveLower(collectionManager));
         commandManager.register("sum_of_capacity", new SumOfCapacity(collectionManager));
         commandManager.register("filter_by_capacity", new FilterByCapacity(collectionManager));

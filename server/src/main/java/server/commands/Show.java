@@ -1,5 +1,6 @@
 package server.commands;
 
+import common.network.responses.ResponseVehicles;
 import server.managers.CollectionManager;
 import common.network.requests.Request;
 import common.utils.ExecutionResponse;
@@ -23,15 +24,7 @@ public class Show extends Command{
      * @return Успешность выполнения команды.
      */
     @Override
-    public ExecutionResponse apply(Request req) {
-        if (collectionManager.isEmpty()) return new ExecutionResponse("Коллекция пустая!");
-        try {
-            return new ExecutionResponse(collectionManager.show());
-        } catch (SQLException e){
-            return new ExecutionResponse(false, "Ошибка работы с базой данных");
-        } catch (DBManager.NotFoundException e){
-            return new ExecutionResponse(false, "В коллекции существует объект принадлежащий несуществующему пользователю");
-        }
-
+    public ResponseVehicles apply(Request req) {
+        return new ResponseVehicles(true, null, collectionManager.getCollection());
     }
 }

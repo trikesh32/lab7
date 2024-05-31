@@ -103,7 +103,7 @@ public class AuthController {
             UserHandler.setCurrentLanguage(languageComboBox.getValue());
             DialogManager.info("RegisterSuccess", localizator);
 
-//            callback.run();
+            callback.run();
 
         } catch (InvalidFormException exception) {
             DialogManager.alert("InvalidCredentials", localizator);
@@ -127,8 +127,8 @@ public class AuthController {
             var response = (ResponseUser) client.sendAndReceiveCommand(new RequestWithUserArg("auth", user, null));
             if (!response.getExitCode()) {
                 switch (response.getMessage()){
-                    case "Нет такого пользователя" -> DialogManager.alert("UserNotFound", localizator);
-                    case "Не правильный пароль" -> DialogManager.alert("PasswordIncorrect", localizator);
+                    case "UserNotFound" -> DialogManager.alert("UserNotFound", localizator);
+                    case "PasswordIncorrect" -> DialogManager.alert("PasswordIncorrect", localizator);
                     default -> DialogManager.createAlert(localizator.getKeyString("Error"), response.getMessage(), Alert.AlertType.ERROR, false);
                 }
                 return;
@@ -137,7 +137,7 @@ public class AuthController {
             UserHandler.setCurrentUser(response.getUser());
             UserHandler.setCurrentLanguage(languageComboBox.getValue());
             DialogManager.info("AuthSuccess", localizator);
-//            callback.run();
+            callback.run();
 
         } catch (InvalidFormException exception) {
             DialogManager.alert("InvalidCredentials", localizator);

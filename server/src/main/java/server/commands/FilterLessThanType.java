@@ -1,11 +1,13 @@
 package server.commands;
 
+import common.network.responses.ResponseVehicles;
 import server.managers.CollectionManager;
 import common.models.Vehicle;
 import common.models.VehicleType;
 import common.network.requests.RequestWithTypeArg;
 import common.network.requests.Request;
-import common.utils.ExecutionResponse;
+
+import java.util.List;
 
 /**
  * Выводит те элементы, чей VehicleType меньше заданного.
@@ -24,15 +26,10 @@ public class FilterLessThanType extends Command{
      * @return Успешность выполнения команды.
      */
     @Override
-    public ExecutionResponse apply(Request request) {
+    public ResponseVehicles apply(Request request) {
         var req = (RequestWithTypeArg) request;
         VehicleType type = req.getTypeArg();
-        StringBuilder res = new StringBuilder();
-        StringBuilder finalRes = res;
-        collectionManager.getCollection().stream().filter(x -> x.getVehicleType().compareTo(type) < 0).forEach(x -> finalRes.append(x + "\n"));
-        if (res.isEmpty()){
-            res = new StringBuilder("Элементов удовлетворяющим условию не найдено!");
-        }
-        return new ExecutionResponse(res.toString().trim());
+        List<Vehicle> filteredVehicles = collectionManager.getCollection().stream().filter(x -> x.getVehicleType().compareTo(type) < 0).toList();
+        return new ResponseVehicles(true, null, filteredVehicles);
     }
 }

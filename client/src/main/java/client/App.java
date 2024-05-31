@@ -2,17 +2,21 @@ package client;
 
 import client.console.StandardConsole;
 import client.controllers.AuthController;
+import client.controllers.EditController;
+import client.controllers.MainController;
 import client.network.UDPClient;
 import client.utils.Runner;
 import client.managers.CommandManager;
 import client.commands.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -72,13 +76,37 @@ public class App extends Application {
         authController.setClient(client);
         authController.setLocalizator(localizator);
 
+        mainStage.setOnCloseRequest(event -> {
+            Platform.exit();
+        });
         mainStage.setScene(new Scene(authRoot));
         mainStage.setTitle("Vehicle fun");
         mainStage.setResizable(false);
         mainStage.show();
     }
     public void startMain(){
+        var mainLoader = new FXMLLoader(getClass().getResource("/main.fxml"));
+        var mainRoot = loadFxml(mainLoader);
 
+        var editLoader = new FXMLLoader(getClass().getResource("/edit.fxml"));
+        var editRoot = loadFxml(editLoader);
+        var editScene = new Scene(editRoot);
+        var editStage = new Stage();
+        editStage.setScene(editScene);
+        editStage.setResizable(false);
+        editStage.setTitle("Vehicle");
+        EditController editController = editLoader.getController();
+        editController.setStage(editStage);
+        editController.setLocalizator(localizator);
+        MainController mainController = mainLoader.getController();
+        mainController.setEditController(editController);
+        mainController.setContext(client, localizator, mainStage);
+        mainController.setAuthCallback(this::authStage);
+
+        mainStage.setScene(new Scene(mainRoot));
+        mainController.setRefreshing(true);
+        mainController.refresh();
+        mainStage.show();
     }
     private Parent loadFxml(FXMLLoader loader){
         Parent parent = null;

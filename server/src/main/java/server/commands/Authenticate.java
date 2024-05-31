@@ -2,6 +2,7 @@ package server.commands;
 
 import common.network.requests.Request;
 import common.network.requests.RequestWithUserArg;
+import common.network.responses.ResponseUser;
 import common.utils.ExecutionResponse;
 import server.managers.AuthManager;
 
@@ -14,19 +15,19 @@ public class Authenticate extends Command{
         this.authManager = authManager;
     }
 
-    public ExecutionResponse apply(Request request){
+    public ResponseUser apply(Request request){
         var req = (RequestWithUserArg) request;
         var user = req.getUserArg();
         try {
             var userId = authManager.authenticateUser(user.getName(), user.getPassword());
             if (userId == 0){
-                return new ExecutionResponse(false, "Нет такого пользователя");
+                return new ResponseUser(false, "UserNotFound", null);
             } else if (userId == -1) {
-                return new ExecutionResponse(false, "Не правильный пароль");
+                return new ResponseUser(false, "PasswordIncorrect", null);
             }
-            return new ExecutionResponse(true, "Пользователь найден", user.copy(userId));
+            return new ResponseUser(true, null, user.copy(userId));
         } catch (Exception e){
-            return new ExecutionResponse(false, e.toString());
+            return new ResponseUser(false, e.toString(), null);
         }
     }
 }

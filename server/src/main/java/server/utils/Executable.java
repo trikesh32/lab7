@@ -1,7 +1,8 @@
 package server.utils;
 
 import common.network.requests.Request;
-import common.utils.ExecutionResponse;
+import common.network.responses.Response;
+
 
 /**
  * Интерфейс для всех выполняемых команд.
@@ -14,5 +15,5 @@ public interface Executable {
      * @param request Аргумент для выполнения
      * @return результат выполнения
      */
-    ExecutionResponse apply(Request request);
+    Response apply(Request request);
 }

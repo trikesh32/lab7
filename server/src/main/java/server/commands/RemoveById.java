@@ -1,5 +1,6 @@
 package server.commands;
 
+import common.network.responses.Response;
 import server.managers.CollectionManager;
 import common.network.requests.Request;
 import common.network.requests.RequestWithIntArg;
@@ -26,21 +27,21 @@ public class RemoveById extends Command{
      * @return Успешность выполнения команды.
      */
     @Override
-    public ExecutionResponse apply(Request request) {
+    public Response apply(Request request) {
         var req = (RequestWithIntArg)request;
         if (collectionManager.getById(req.getIntegerArg()) == null || !collectionManager.isContain(collectionManager.getById(req.getIntegerArg()))) {
-            return new ExecutionResponse(false, "Элемент с заданым ID не найден!");
+            return new Response(false, "ObjectNotFound");
         }
         try {
             collectionManager.remove(req.getUser(), req.getIntegerArg());
         } catch (SQLException e){
-            return new ExecutionResponse(false, "Ошибка работы базы данных" + e.toString());
+            return new Response(false, "DBError");
         } catch (DBManager.NotFoundException e){
-            return new ExecutionResponse(false, "Элемент не найден");
+            return new Response(false, "ObjectNotFound");
         } catch (ForbiddenException e) {
-            return new ExecutionResponse(false, "Это не ваш объект");
+            return new Response(false, "Forbidden");
         }
-        return new ExecutionResponse("Vehicle успешно удален!");
+        return new Response(true, null);
     }
 
 

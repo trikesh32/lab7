@@ -70,7 +70,7 @@ public class CollectionManager {
      */
     public boolean add(Vehicle o, User user) throws SQLException {
         var newId = dbManager.add(user, o);
-        Vehicle vehicle = new Vehicle(newId, o.getName(), o.getCoordinates(), o.getCreationDate(), o.getEnginePower(), o.getCapacity(), o.getVehicleType(), o.getFuelType(), user.getId());
+        Vehicle vehicle = new Vehicle(newId, o.getName(), o.getCoordinates(), o.getCreationDate(), o.getEnginePower(), o.getCapacity(), o.getVehicleType(), o.getFuelType(), user);
         lock.lock();
         vehicleMap.put(newId, vehicle);
         collection.push(vehicle);
@@ -85,7 +85,7 @@ public class CollectionManager {
      * @return true если успешно, false если нет
      */
     public void remove(User user, Integer id) throws SQLException, DBManager.NotFoundException, ForbiddenException {
-        if (getById(id).getUserId() != user.getId()){
+        if (getById(id).getCreator().getId() != user.getId()){
             throw new ForbiddenException();
         }
         dbManager.remove(user, id);
@@ -163,7 +163,7 @@ public class CollectionManager {
     public void clear(User user) throws SQLException {
         dbManager.clear(user);
         lock.lock();
-        collection.removeIf(vehicle -> vehicle.getUserId() == user.getId());
+        collection.removeIf(vehicle -> vehicle.getCreator().getId() == user.getId());
         lastSaveTime = LocalDateTime.now();
         lock.unlock();
     }
@@ -177,7 +177,7 @@ public class CollectionManager {
         dbManager.remove_lower(user, o);
         lock.lock();
         if (o != null && o.check_validity()){
-            collection = collection.stream().filter(x -> x.compareTo(o) >= 0 || x.getUserId() != user.getId()).collect(Collectors.toCollection(Stack::new));
+            collection = collection.stream().filter(x -> x.compareTo(o) >= 0 || x.getCreator().getId() != user.getId()).collect(Collectors.toCollection(Stack::new));
         }
         lastSaveTime = LocalDateTime.now();
         lock.unlock();
@@ -185,11 +185,11 @@ public class CollectionManager {
     public void update(User user, Vehicle v, Integer id) throws ForbiddenException, SQLException, DBManager.NotFoundException {
         lock.lock();
         var vehicle = getById(id);
-        if (vehicle.getUserId() != user.getId()) throw new ForbiddenException();
+        if (vehicle.getCreator().getId() != user.getId()) throw new ForbiddenException();
         lock.unlock();
         dbManager.update(user, v, id);
         lock.lock();
-        var new_vehicle = new Vehicle(id, v.getName(), v.getCoordinates(), v.getCreationDate(), v.getEnginePower(), v.getCapacity(), v.getVehicleType(), v.getFuelType(), user.getId());
+        var new_vehicle = new Vehicle(id, v.getName(), v.getCoordinates(), v.getCreationDate(), v.getEnginePower(), v.getCapacity(), v.getVehicleType(), v.getFuelType(), user);
         collection.remove(getById(id));
         vehicleMap.put(id, new_vehicle);
         collection.push(new_vehicle);

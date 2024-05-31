@@ -89,11 +89,11 @@ public class DBManager {
     public Stack<Vehicle> loadVehicle() throws SQLException {
         Stack<Vehicle> coll = new Stack<>();
         var conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM vehicle");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM vehicle JOIN users ON vehicle.user_id = users.id");
         ResultSet res = stmt.executeQuery();
         while (res.next()){
             Vehicle o = new Vehicle(res.getInt(1), res.getString(2), new Coordinates(res.getInt(3), res.getFloat(4)), res.getDate(5).toLocalDate(),
-                    res.getInt(6), res.getInt(7), VehicleType.valueOf(res.getString(8)), res.getString(9) == null ? null: FuelType.valueOf(res.getString(9)), res.getInt(10));
+                    res.getInt(6), res.getInt(7), VehicleType.valueOf(res.getString(8)), res.getString(9) == null ? null: FuelType.valueOf(res.getString(9)), new User(res.getInt(11), res.getString(12), res.getString(13)));
             coll.push(o);
         }
         return coll;

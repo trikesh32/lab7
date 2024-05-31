@@ -1,5 +1,7 @@
 package server.commands;
 
+import common.network.responses.Response;
+import common.network.responses.ResponseInteger;
 import server.managers.CollectionManager;
 import common.models.Vehicle;
 import common.network.requests.Request;
@@ -24,8 +26,8 @@ public class  SumOfCapacity extends Command{
      * @return Успешность выполнения команды.
      */
     @Override
-    public ExecutionResponse apply(Request request) {
+    public ResponseInteger apply(Request request) {
         int cap = collectionManager.getCollection().stream().mapToInt(Vehicle::getCapacity).sum();
-        return new ExecutionResponse("Сумма всех capacity: " + cap);
+        return new ResponseInteger(true, null, cap);
     }
 }

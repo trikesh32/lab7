@@ -1,5 +1,6 @@
 package server.commands;
 
+import common.network.responses.Response;
 import server.managers.CollectionManager;
 import common.network.requests.Request;
 import common.utils.ExecutionResponse;
@@ -23,12 +24,12 @@ public class Clear extends Command{
      * @return Успешность выполнения команды.
      */
     @Override
-    public ExecutionResponse apply(Request request) {
+    public Response apply(Request request) {
         try {
             collectionManager.clear(request.getUser());
         } catch (SQLException e){
-            return new ExecutionResponse(false, "Ошибка работы базы данных");
+            return new Response(false, "DBError");
         }
-        return new ExecutionResponse("Коллекция очищена успешно!");
+        return new Response(true, null);
     }
 }

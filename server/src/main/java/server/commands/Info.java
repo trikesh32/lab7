@@ -1,5 +1,6 @@
 package server.commands;
 
+import common.network.responses.ResponseInfo;
 import server.managers.CollectionManager;
 import common.network.requests.Request;
 import common.utils.ExecutionResponse;
@@ -22,19 +23,10 @@ public class Info extends Command{
      * @return Успешность выполнения команды.
      */
     @Override
-    public ExecutionResponse apply(Request req) {
+    public ResponseInfo apply(Request req) {
 
         LocalDateTime lastInitTime = collectionManager.getLastInitTime();
         LocalDateTime lastSaveTime = collectionManager.getLastSaveTime();
-        String lastInitTimeString = (lastInitTime == null) ? "коллекция еще не проинициализирована" : lastInitTime.toLocalDate().toString() + " " +
-                lastInitTime.toLocalTime().toString();
-        String lastSaveTimeString = (lastSaveTime == null) ? "сохранений еще не было" : lastSaveTime.toLocalDate().toString() + " " +
-                lastSaveTime.toLocalTime().toString();
-        var res = "Информация о колекции: \n" +
-                "Тип: " + collectionManager.getCollection().getClass().toString() + "\n" +
-                "Количество элементов: " + collectionManager.getCollection().size() + "\n" +
-                "Последнее сохранение: " + lastSaveTimeString + "\n" +
-                "Последняя инициализация: " + lastInitTimeString;
-        return new ExecutionResponse(res);
+        return new ResponseInfo(true, null, lastInitTime, lastSaveTime, collectionManager.getCollection().getClass(), collectionManager.getCollection().size());
     }
 }

@@ -1,9 +1,12 @@
 package server.commands;
 
+import common.models.Vehicle;
+import common.network.responses.ResponseVehicles;
 import server.managers.CollectionManager;
 import common.network.requests.Request;
 import common.network.requests.RequestWithIntArg;
-import common.utils.ExecutionResponse;
+
+import java.util.List;
 
 /**
  * Выводит элементы, у которых capacity равен заданному.
@@ -22,15 +25,10 @@ public class FilterByCapacity extends Command{
      * @return Успешность выполнения команды.
      */
     @Override
-    public ExecutionResponse apply(Request request) {
+    public ResponseVehicles apply(Request request) {
         var req = (RequestWithIntArg) request;
         int capacity = req.getIntegerArg();
-        StringBuilder res = new StringBuilder();
-        StringBuilder finalRes = res;
-        collectionManager.getCollection().stream().filter(x -> x.getCapacity() == capacity).forEach(x -> finalRes.append(x + "\n"));
-        if (finalRes.isEmpty()){
-            res = new StringBuilder("Элементов удовлетворяющим условию не найдено!");
-        }
-        return new ExecutionResponse(res.toString().trim());
+        List<Vehicle> filteredVehicles = collectionManager.getCollection().stream().filter(x -> x.getCapacity() == capacity).toList();
+        return new ResponseVehicles(true, null, filteredVehicles);
     }
 }

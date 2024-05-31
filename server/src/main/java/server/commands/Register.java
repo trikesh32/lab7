@@ -2,6 +2,7 @@ package server.commands;
 
 import common.network.requests.Request;
 import common.network.requests.RequestWithUserArg;
+import common.network.responses.ResponseUser;
 import common.utils.ExecutionResponse;
 import server.managers.AuthManager;
 
@@ -13,22 +14,22 @@ public class Register extends Command{
         this.authManager = authManager;
     }
 
-    public ExecutionResponse apply(Request request){
+    public ResponseUser apply(Request request){
         var req = (RequestWithUserArg) request;
         var user = req.getUserArg();
         if (user.getName().length() >= MAX_USERNAME_LENGTH){
-            return new ExecutionResponse(false, "Длина имени пользователя должна быть меньше " + MAX_USERNAME_LENGTH);
+            return new ResponseUser(false, "UsernameTooLong", null);
         }
         try {
             var newUserId = authManager.registerUser(user.getName(), user.getPassword());
             if (newUserId == 0){
-                return new ExecutionResponse(false, "Не удалось создать пользователя");
+                return new ResponseUser(false, "UserNotCreated", null);
             } if (newUserId == -1){
-                return new ExecutionResponse(false, "Имя пользователя занято");
+                return new ResponseUser(false, "UserAlreadyExists", null);
             }
-            return new ExecutionResponse(true, "Пользователь найден!", user.copy(newUserId));
+            return new ResponseUser(true, null, user.copy(newUserId));
         } catch (Exception e){
-            return new ExecutionResponse(false, e.toString());
+            return new ResponseUser(false, e.toString(), null);
         }
     }
 }

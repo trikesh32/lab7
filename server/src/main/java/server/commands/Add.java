@@ -1,5 +1,6 @@
 package server.commands;
 
+import common.network.responses.Response;
 import server.managers.CollectionManager;
 import common.models.Vehicle;
 import common.network.requests.Request;
@@ -22,17 +23,17 @@ public class Add extends Command{
      * @return Успешность выполнения команды.
      */
     @Override
-    public ExecutionResponse apply(Request request) {
+    public Response apply(Request request) {
         var req = (RequestWithVehicleArg) request;
         var inputVehicle = req.getVehicleArg();
         var user = req.getUser();
         try {
             if (inputVehicle != null && inputVehicle.check_validity()){
                    collectionManager.add(inputVehicle, user);
-                   return new ExecutionResponse("Vehicle успешно добавлен!");
-            } return new ExecutionResponse(false,"Данные не валидны!");
+                   return new Response(true, null);
+            } return new Response(false,"NotValidData");
         } catch (Exception e){
-            return new ExecutionResponse(false, e.toString());
+            return new Response(false, e.toString());
         }
     }
 }

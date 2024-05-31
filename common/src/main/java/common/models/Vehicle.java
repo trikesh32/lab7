@@ -1,5 +1,6 @@
 package common.models;
 
+import common.user.User;
 import common.utils.Validatable;
 
 import java.io.Serializable;
@@ -20,9 +21,9 @@ public class Vehicle implements Validatable, Comparable<Vehicle>, Serializable {
     private Integer capacity; //Поле не может быть null, Значение поля должно быть больше 0
     private VehicleType type; //Поле не может быть null
     private FuelType fuelType; //Поле может быть null
-    private Integer userId;
+    private User creator;
 
-    public Vehicle(Integer id, String name, Coordinates coordinates, LocalDate creationDate, Integer enginePower, Integer capacity, VehicleType type, FuelType fuelType, Integer user_id) {
+    public Vehicle(Integer id, String name, Coordinates coordinates, LocalDate creationDate, Integer enginePower, Integer capacity, VehicleType type, FuelType fuelType, User creator) {
         this.id = id;
         this.name = name;
         this.coordinates = coordinates;
@@ -31,10 +32,10 @@ public class Vehicle implements Validatable, Comparable<Vehicle>, Serializable {
         this.capacity = capacity;
         this.type = type;
         this.fuelType = fuelType;
-        this.userId = user_id;
+        this.creator = creator;
     }
-    public Vehicle(Integer id, String name, Coordinates coordinates, Integer enginePower, Integer capacity, VehicleType type, FuelType fuelType, Integer userId){
-        this(id, name, coordinates, LocalDate.now(), enginePower, capacity, type, fuelType, userId);
+    public Vehicle(Integer id, String name, Coordinates coordinates, Integer enginePower, Integer capacity, VehicleType type, FuelType fuelType, User creator){
+        this(id, name, coordinates, LocalDate.now(), enginePower, capacity, type, fuelType, creator);
     }
     public Vehicle(Integer id, String name, Coordinates coordinates, Integer enginePower, Integer capacity, VehicleType type, FuelType fuelType){
         this(id, name, coordinates, LocalDate.now(), enginePower, capacity, type, fuelType, null);
@@ -120,17 +121,21 @@ public class Vehicle implements Validatable, Comparable<Vehicle>, Serializable {
                 ", capacity: " + capacity +
                 ", type: " + type +
                 ", fuelType: " + fuelType +
+                "User: " + creator.getName() + " " + creator.getId() +
                 '}';
     }
     public int compareTo(Vehicle o){
         return this.getName().compareTo(o.getName());
     }
 
-    public int getUserId() {
-        return userId;
+    public User getCreator() {
+        return creator;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
+    public Vehicle copy(int id, User creator){
+        return new Vehicle(id, this.name, this.coordinates, this.creationDate, this.enginePower, this.capacity, this.type, this.fuelType, creator);
     }
 }

@@ -1,5 +1,6 @@
 package server.commands;
 
+import common.network.responses.Response;
 import server.managers.CollectionManager;
 import common.models.Vehicle;
 import common.network.requests.Request;
@@ -28,17 +29,17 @@ public class RemoveLower extends Command {
      * @return Успешность выполнения команды.
      */
     @Override
-    public ExecutionResponse apply(Request request) {
+    public Response apply(Request request) {
         try {
             var req = (RequestWithVehicleArg) request;
             Vehicle o = req.getVehicleArg();
             if (o != null && o.check_validity()) {
                 collectionManager.removeLower(o, req.getUser());
-                return new ExecutionResponse("Элементы меньше заданного удалены успешно!");
+                return new Response(true, null);
             }
-            return new ExecutionResponse(false, "Данные не валидны!");
+            return new Response(false, "NotValidData");
         } catch (SQLException e){
-            return new ExecutionResponse(false, "Ошибка работы базы данных");
+            return new Response(false, "DBError");
         }
     }
 }

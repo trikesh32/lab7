@@ -35,7 +35,7 @@ public class Add extends Command{
             if (!args[1].isEmpty()) return new ExecutionResponse(false, "Команда используется не верно!");
             console.println("Cоздаем новый Vehicle");
             Vehicle o = Asker.askVehicle(console, 99999);
-            o.setUserId(UserHandler.getCurrentUser().getId());
+            o.setCreator(UserHandler.getCurrentUser());
             var response = client.sendAndReceiveCommand(new RequestWithVehicleArg("add", o, UserHandler.getCurrentUser()));
             return new ExecutionResponse(response.getExitCode(), response.getMessage());
 
